@@ -87,7 +87,7 @@ class PostDetailFilter(generics.ListAPIView):
     filter_backends = [filters.SearchFilter]
     search_fields = ['^slug']
 
-class createPost(generics.CreateAPIView):
+class CreatePost(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Post.objects.all()
     serializer_class = PostSerializer

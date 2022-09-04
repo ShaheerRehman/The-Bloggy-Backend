@@ -15,14 +15,14 @@ class CustomUserCreate(generics.CreateAPIView):
     serializer_class = NewSerializer
 
 
-#problem is here
 class BlacklistTokenView(APIView):
     permission_classes = [AllowAny]
     def post(self, request):
         try:
-            refresh_token = request.data("refresh_token")
+            refresh_token = request.data.get("refresh_token")
             token = RefreshToken(refresh_token)
             token.blacklist()
+            return Response(status=status.HTTP_200_OK)
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
