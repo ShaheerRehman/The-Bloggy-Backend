@@ -3,7 +3,11 @@ from django.utils.text import slugify
 from users.models import New
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
+
+def upload_to(instance, filename):
+    return 'posts/{filename}'.format(filename=filename)
 
 
 class Category(models.Model):
@@ -30,6 +34,7 @@ class Post(models.Model):
     title = models.CharField(max_length=200)
     excerpt = models.TextField(null=True)
     content = models.TextField()
+    image = models.ImageField(_("Image"), upload_to=upload_to, default='posts/defaults.jpg')
     slug = models.SlugField(max_length=250, unique_for_date='published', unique=True, null=False)
     published = models.DateTimeField(default=timezone.now)
     author = models.ForeignKey(New, on_delete=models.CASCADE, related_name='blog_posts')

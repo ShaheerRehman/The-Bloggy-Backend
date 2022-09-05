@@ -2,11 +2,13 @@ from django.db.models.query import EmptyQuerySet
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import AnonymousUser
 from rest_framework import generics
+from rest_framework.response import Response
+from rest_framework import status
 from blog.models import Post
 from .serializers import PostSerializer
 from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly, BasePermission, SAFE_METHODS, IsAuthenticated
 from rest_framework import filters
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.parsers import MultiPartParser, FormParser
 
 # Create your views here.
 
@@ -87,23 +89,35 @@ class PostDetailFilter(generics.ListAPIView):
     filter_backends = [filters.SearchFilter]
     search_fields = ['^slug']
 
-class CreatePost(generics.CreateAPIView):
-    permission_classes = [IsAuthenticated]
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
+# class CreatePost(generics.CreateAPIView):
+#     # permission_classes = [IsAuthenticated]
+#     queryset = Post.objects.all()
+#     serializer_class = PostSerializer
+
+class AdminPostUpload(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request, format = None):
+        print(request.data)
+        serializer = PostSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status = status.HTTP_200_OK)
+        else:
+            return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
 class AdminPostDetail(generics.RetrieveAPIView):
 
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     queryset = Post.objects.all()
     serializer_class = PostSerializer
 
 class EditPost(generics.UpdateAPIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     queryset = Post.objects.all()
     serializer_class = PostSerializer
 class DeletePost(generics.DestroyAPIView):
 
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     queryset = Post.objects.all()
     serializer_class = PostSerializer
